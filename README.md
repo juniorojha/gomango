@@ -43,25 +43,47 @@ For e.g.,
 Instead of 
 
 ```
-results = *mgo.Session.DB(testdb).C(testcollection).Find(bson.M{"isActive": true}).Sort("title").All()
+results := *mgo.Session.DB(testdb).C(testcollection).Find(bson.M{"isActive": true}).Sort("title").All()
 ```
 
 with GoMango, you can do 
 
 ```
-results = gomango.GetSortedResults("testcollection", bson.M{"isActive": true}, "title")
+results := gomango.GetSortedResults("testcollection", bson.M{"isActive": true}, "title")
 ```
 
 which will return the same results, i.e. all objects with field 'isActive' being true, sorted by their 'title' fields from 'testcollection'
 
-## List of functions
+## List of functions with examples
 
-* **GetResults** - GetResults Function will return all results for a given query.
+* **GetResults** - GetResults function will return all results for a given query.
+
 ```
-results = gomango.GetResults("testcollection", bson.M{"field1": value1, "field2": value2})
+results := gomango.GetResults("testcollection", bson.M{"field1": "value1", "field2": "value2"})
 ```
 
-* **GetSortedResults** - GetSortedResults Function will return results sorted as per sorting criteria.
+* **GetSortedResults** - GetSortedResults function will return results sorted as per sorting criteria.
+```
+results := gomango.GetSortedResults("testcollection", bson.M{"field1": true, "field2": "value2"}, "field3")
+```
+
+* **GetFields** - GetFields function uses a projection to show only those fields that are required. Returns all matching fields.
+```
+results := gomango.GetFields("testcollection", bson.M{"field1": "value1"}, bson.M{"field_to_be_included_1": 1, "field_to_be_included_2": 1, "field_to_be_excluded": 0})
+```
+
+* **GetMappedFields** - GetMappedFields is similar to GetResults but returns an array of maps instead of an array of interfaces.
+```
+results := gomango.GetMappedFields("testcollection", bson.M{"field1": "value1"}, "field_to_be_included": 1})
+```
+
+* **GetMappedFieldsWithLimit** - GetMappedFieldsWithLimit is similar to GetMappedFields but uses Limit and Iter to return only the number of results that are required.
+```
+results = gomango.GetMappedFieldsWithLimit("testcollection", bson.M{"field1": "value1", "field2": "value2", "field3_bool": true, "field4_should_not_exist": bson.M{"$exists": false}, "field5_in_given_array": bson.M{"$in": []string{"arr_val1", "arr_val2", "arr_val3"}}}, bson.M{"field_to_be_included": 1}, 5)
+
+```
+
+
 
 ## Miscellaneous
 
@@ -77,5 +99,5 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Many thanks to [Abhishek](https://github.com/soniabhishek) for helping me learn Go and showing me the first examples of functions in GoMango. He's a great guy!
+* Many thanks to [Abhishek](https://github.com/soniabhishek) for helping me learn Go and showing me the first examples of functions in *to-be* GoMango. He's a great guy!
 * Many many thanks to [Saddy](https://github.com/Sadhanandh) for inspiring me to start this project.
