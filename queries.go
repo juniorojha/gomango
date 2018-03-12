@@ -100,7 +100,7 @@ func RemoveDocument(collectionName string, selector interface{}) (err error) {
 	return MgoSession.DB(Dbname).C(collectionName).Remove(selector)
 }
 
-// GetResultsById is a variant of GetResults which returns one result - matching a given set of criteria.
+// GetResultsById is a variant of GetResults which returns one result - matching a given set of criteria, which is supposed to be an ID. This function could be modified in later versions to match only ID as that's a frequent requirement in MongoDB-backed data.
 func GetResultsById(collectionName string, query interface{}) (result interface{}) {
 	err := MgoSession.DB(Dbname).C(collectionName).Find(query).One(&result)
 	if err != nil {
@@ -120,7 +120,7 @@ func InsertDocument(collectionName string, query ...interface{}) bool {
 	return true
 }
 
-// UpsertCollection is a standard Upsert operation.
+// UpsertCollection is a standard Upsert operation. Returns changeInfo and error.
 func UpsertCollection(collectionName string, selector interface{}, update interface{}) (info *mgo.ChangeInfo, err error) {
 	return MgoSession.DB(Dbname).C(collectionName).Upsert(selector, update)
 }

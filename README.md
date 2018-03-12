@@ -79,11 +79,76 @@ results := gomango.GetMappedFields("testcollection", bson.M{"field1": "value1"},
 
 * **GetMappedFieldsWithLimit** - GetMappedFieldsWithLimit is similar to GetMappedFields but uses Limit and Iter to return only the number of results that are required.
 ```
-results = gomango.GetMappedFieldsWithLimit("testcollection", bson.M{"field1": "value1", "field2": "value2", "field3_bool": true, "field4_should_not_exist": bson.M{"$exists": false}, "field5_in_given_array": bson.M{"$in": []string{"arr_val1", "arr_val2", "arr_val3"}}}, bson.M{"field_to_be_included": 1}, 5)
-
+results := gomango.GetMappedFieldsWithLimit("testcollection", bson.M{"field1": "value1", "field2": "value2", "field3_bool": true, "field4_should_not_exist": bson.M{"$exists": false}, "field5_in_given_array": bson.M{"$in": []string{"arr_val1", "arr_val2", "arr_val3"}}}, bson.M{"field_to_be_included": 1}, 5)
 ```
 
+* **GetSortedResultsMap** - GetSortedResultsMap function will return results sorted as per sorting criteria in the form of an array of maps.
+```
+results := gomango.GetSortedResultsMap("testcollection", bson.M{"field1": "value1", "field2": "value2", "field3_bool": true}, "-createdAt")
+// Sorts by descending order of field named 'createdAt'
+```
 
+* **GetSortedMappedFields** - GetSortedMappedFields function will return only the requested fields sorted as per sorting criteria in the form of an array of maps.
+```
+results := gomango.GetSortedMappedFields("testcollection", bson.M{"field1_only_if_exists": bson.M{"$exists": true}, "field2": "value2", "field4_not_in_given_array": bson.M{"$not": bson.M{"$in": []string{"arr_val1", "arr_val2", "arr_val3"}}}}, bson.M{//leave blank to include all fields}, "-sort_by_field_name_without_quotes")
+```
+
+* **DeleteFields** - DeleteFields is actually an Update operation but can delete whole documents as well.
+```
+results := gomango.DeleteFields("testcollection", bson.M{"identifier_field1": "value1", bson.M{"$pull": bson.M{"could_be_an_array_field": bson.M{"_id": bson.ObjectIdHex(ID_val)}}})
+```
+
+* **RemoveDocument** - RemoveDocument to remove all documents matching given conditions. Avoid using DeleteFields for this purpose.
+```
+err := gomango.RemoveDocument("testcollection", bson.M{"field1": "value1"})
+```
+
+* **GetResultsById** - GetResultsById is a variant of GetResults which returns one result - matching a given set of criteria, which is supposed to be an ID. This function could be modified in later versions to match only ID as that's a frequent requirement in MongoDB-backed data.
+```
+results := gomango.GetResultsById("testcollection", bson.M{"field1": "value1"})
+```
+
+* **InsertDocument** - InsertDocument function accepts any number of queries to insert to a document. Returns success or failure as boolean.
+```
+err := gomango.InsertDocument("testcollection", bson.M{"field1": "value1"})
+```
+
+* **UpsertCollection** - UpsertCollection is a standard Upsert operation. Returns changeInfo and error.
+```
+_, err := gomango.UpsertCollection("testcollection", bson.M{"field1": "value1"}, bson.M{"field1": "value1_2", "field2": "value2"})
+```
+
+* **FindOneDocument** - FindOneDocument is a lot like GetResultsById but the return type here is map[string]interface{} instead of just an interface{}.
+```
+result := gomango.FindOneDocument("testcollection", bson.M{"field1": "value1", "field2":  "value2",})
+```
+
+* **FindDocuments** - FindDocuments is an 'All' variant of FindOneDocument. Returns all matching results as an array of maps.
+```
+results := gomango.FindDocuments("testcollection", bson.M{"field1": "value1", "field2":  "value2",})
+```
+
+* **UpdateDocument** - UpdateDocument will update fields matching the given query. Use $set with this to retain other fields.
+```
+err := gomango.UpdateDocument("testcollection", bson.M{"field1": "value1"}, bson.M{"$set": map[string]map[string]string{"field2": map[string]string{"sub_field1": "value_sub_field_1", "sub_field2": "value_sub_field_2"}}})
+```
+
+* **GetCount** - GetCount returns the count of results of a given query.
+```
+count, err := gomango.GetCount("testcollection", bson.M{"field1": "value1"})
+```
+
+* **Aggregation** - Aggregation function provides a medium to use the MongoDB Aggregation Framework. Can be used in many different ways by supplying an array of queries as the second parameter.
+
+* **Distinct** - Distinct function to return distinct records for a given field in a query.
+```
+results := gomango.Distinct("testcollection", bson.M{"field1": "value1", "field2": "field2"}, "distinct_field")
+```
+
+* **FindAndModify** - FindAndModify function to find and modify in a single step. Returns count of items modified, information of the modification and an error if there.
+```
+count, _, err := gomango.FindAndModify("testcollection", bson.M{"field1": "value1"}, bson.M{"$inc": bson.M{"field2": "value2"}})
+```
 
 ## Miscellaneous
 
