@@ -5,7 +5,7 @@ A utility to use on top of mgo to ease the process of making Mongo queries in Go
 
 Clone this repository into your project folder residing in the src folder of your GOPATH. See [Writing Go Code](https://golang.org/doc/code.html) for more information.
 
-Update [queries.go](queries.go) with your MongDB details and credentials.
+Update [queries.go](queries.go) with your MongoDB details and credentials.
 
 Import the package gomango into the code wherever required like this 
 
